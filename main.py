@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 #TODO: Create a DebateHandler, which will store the debate state and moderates responses
 #TODO: Add handler to know if the bot has joined a group
+#TODO: Add README
 
 #REF: Telegram API does not support modifying user permissions 
 
