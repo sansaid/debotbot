@@ -8,8 +8,8 @@ DEBATE_TOPICS = [
     'Pies are better than cake'
 ]
 
-def get_random_topic():
-    max_topic_int = len(DEBATE_TOPICS) - 1
+def get_random_topic(debate_topics=DEBATE_TOPICS):
+    max_topic_int = len(debate_topics) - 1
     index = random.randint(0, max_topic_int)
 
-    return DEBATE_TOPICS[index]
+    return debate_topics[index]
