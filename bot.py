@@ -25,7 +25,7 @@ from telegram.ext import (Updater, CommandHandler, CallbackContext)
 # THIS_DIR = os.path.dirname(__file__)
 # sys.path.append(os.path.join(THIS_DIR, "/lib"))
 
-from lib.random_debate_topics import get_random_topic
+from utils.random_debate_topics import get_random_topic
 
 # Enable logging
 logging.basicConfig(
