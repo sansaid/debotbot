@@ -1,31 +1,13 @@
 #!/usr/bin/env python
 
-# Example: https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/conversationbot.py
-
-#TODO: Add a /help handler
-#TODO: Add a profile photo for Debotbot
-#TODO: Add handler to know if the bot has joined a group
-#TODO: Add README
-#TODO: Reject starting debate without appropriate bot permissions
-#TODO: Try to implement slow_delay: https://python-telegram-bot.readthedocs.io/en/stable/telegram.chat.html#telegram.Chat.slow_mode_delay
-
-#NOTE: Can check members and permissions here: https://python-telegram-bot.readthedocs.io/en/stable/telegram.chat.html
-#NOTE: Can get new chat members here: https://python-telegram-bot.readthedocs.io/en/stable/telegram.message.html#telegram.Message.new_chat_members
-
 import logging
 from math import ceil
 import re
-import conf
 from telegram import (Update, Chat, ParseMode)
 from telegram.ext import (Updater, CommandHandler, CallbackContext)
 
-# import sys
-# import os
-
-# THIS_DIR = os.path.dirname(__file__)
-# sys.path.append(os.path.join(THIS_DIR, "/lib"))
-
 from utils.random_debate_topics import get_random_topic
+import conf
 
 # Enable logging
 logging.basicConfig(
