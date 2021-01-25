@@ -4,7 +4,7 @@ The Telegram bot that's there to help you structure your debates with friends
 
 ## Usage
 
-Add Debotot to your Telegram group and make sure it has *admin* privileges so that it may pin messages to the group (it's not sufficient to give it the ability to pin messages at this time).
+Add @debotbot_bot to your Telegram group and make sure it has *admin* privileges so that it may pin messages to the group (it's not sufficient to give it the ability to pin messages at this time).
 
 ## Commands
 
