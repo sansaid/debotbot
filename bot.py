@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import logging
-from math import ceil
+import os
 import re
+from math import ceil
 from telegram import (Update, Chat, ParseMode)
 from telegram.ext import (Updater, CommandHandler, CallbackContext)
 
 from utils.random_debate_topics import get_random_topic
-import conf
 
 # Enable logging
 logging.basicConfig(
@@ -16,7 +16,16 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-_, ASSIGN_MOD, RECON, DEBATE, RESULTS = range(5) 
+_, ASSIGN_MOD, RECON, DEBATE, RESULTS = range(5)
+
+def load_envs():
+    required_envs = ['TG_API_TOKEN']
+
+    try:
+        return { env:os.environ[env] for env in required_envs }
+    except KeyError as e:
+        raise Exception(f'Missing environment variable: {e.args[0]}') from e
+        
 
 def start_debate(update: Update, context: CallbackContext):
     debate_start_msg = update.message
@@ -247,7 +256,8 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater(conf.API_TOKEN, use_context=True)
+    envs = load_envs()
+    updater = Updater(envs['TG_API_TOKEN'], use_context=True)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
