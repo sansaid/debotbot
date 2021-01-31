@@ -48,3 +48,11 @@ TBC
 ## Contributing
 
 TBC
+
+## Deploying
+
+To run your own version of Debotbot, you can run the following commands (make sure you have Docker installed):
+
+```sh
+docker run -it --rm -e TG_API_TOKEN=<your API token here> sansaid/debotbot:latest
+```
