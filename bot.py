@@ -76,7 +76,7 @@ def assign_moderator(update: Update, context: CallbackContext):
         return
     elif phase and moderator:
         update.effective_chat.send_message(
-            f'Moderator already assigned, Stalin: {moderator}'
+            f'Moderator already assigned: {moderator.full_name}'
         )
         return
 
@@ -151,7 +151,7 @@ def close_debate(update: Update, context: CallbackContext):
     phase = context.chat_data.get('phase', 0)
     command = _get_command(update.effective_message.text)
 
-    if phase != DEBATE:
+    if not phase:
         update.effective_chat.send_message(f'No debate ongoing to {command}.')
         return
 
