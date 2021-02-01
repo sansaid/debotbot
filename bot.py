@@ -34,7 +34,7 @@ def start_debate(update: Update, context: CallbackContext):
 
     logger.debug(f'Chat data: {context.chat_data}')
 
-    if context.chat_data.get('ongoing_debate'):
+    if context.chat_data.get('phase', 0):
         update.effective_chat.send_message(
             'Debate is currently ongoing. You can vote to end this debate '
             'by sending /cancel or the moderator can /cancel the debate.'
@@ -115,7 +115,7 @@ def _vote_close_debate(update: Update, context: CallbackContext, close_type: str
         
         return
 
-    update.effective_chat.send_messag(
+    update.effective_chat.send_message(
         f'You\'ve voted to {close_type}. {tie_breaker_count - vote_conclude_count} more votes '
         f'needed from non-moderators to {close_type} debate.'
     )
