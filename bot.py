@@ -6,6 +6,7 @@ import re
 from math import ceil
 from telegram import (Update, Chat, ParseMode)
 from telegram.ext import (Updater, CommandHandler, CallbackContext)
+from telegram.constants import CHATMEMBER_ADMINISTRATOR
 
 from utils.random_debate_topics import get_random_topic
 
@@ -29,6 +30,12 @@ def load_envs():
 
 def start_debate(update: Update, context: CallbackContext):
     debate_start_msg = update.message
+    bot_is_admin = _check_admin_rights(update, context)
+
+    if not bot_is_admin:
+        update.effective_chat.send_message("Looks like I'm not an admin! I can't perform my debately duties without being admin. Please promote me to admin and resubmit your request.")
+
+        return bot_is_admin
 
     debate_prop = ' '.join(context.args)
 
@@ -80,10 +87,12 @@ def assign_moderator(update: Update, context: CallbackContext):
         )
         return
 
+    # Unpin messages first so that it does not assign the moderator in case there's a permissions issue
+    update.effective_chat.unpin_all_messages()    
+
     context.chat_data['phase'] = RECON
     moderator = context.chat_data['moderator'] = update.message.from_user
 
-    update.effective_chat.unpin_all_messages()
     update.effective_chat.send_message(
         parse_mode=ParseMode.HTML,
         text=(f"""
@@ -116,7 +125,7 @@ def _vote_close_debate(update: Update, context: CallbackContext, close_type: str
         return
 
     update.effective_chat.send_message(
-        f'You\'ve voted to {close_type}. {tie_breaker_count - vote_conclude_count} more votes '
+        f'You\'ve voted to {close_type}. {tie_breaker_count - vote_count} more votes '
         f'needed from non-moderators to {close_type} debate.'
     )
 
@@ -124,6 +133,14 @@ def _vote_close_debate(update: Update, context: CallbackContext, close_type: str
 def _cleanup_debate(update: Update, context: CallbackContext):
     context.chat_data.clear()
     update.effective_chat.unpin_all_messages()
+
+
+def _check_admin_rights(update: Update, context: CallbackContext):
+    bot_id = context.bot.get_me().id
+    membership = update.effective_chat.get_member(bot_id)
+    is_bot_admin = membership.status == CHATMEMBER_ADMINISTRATOR
+
+    return is_bot_admin
 
 
 def _close_debate(update: Update, context: CallbackContext, via: str, close_type: str):
@@ -252,6 +269,17 @@ def _send_stats(update: Update, context: CallbackContext):
     return
 
 
+def error_handler(update: Update, context: CallbackContext):
+    err = context.error
+
+    logger.error(err)
+    
+    update.effective_chat.send_message(
+        parse_mode=ParseMode.HTML,
+        text="Woops! Something bad has happened. Please contact my owner to fix me!"
+    )
+
+
 def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
@@ -263,17 +291,19 @@ def main():
     dispatcher = updater.dispatcher
 
     # Create the command handlers
-    start_debate_handler = CommandHandler('debate', start_debate)
+    start_debate_handler     = CommandHandler('debate', start_debate)
     update_moderator_handler = CommandHandler('moderate', assign_moderator)
-    close_debate_handler = CommandHandler(['cancel', 'conclude'], close_debate)
-    begin_debate_handler = CommandHandler('begin', begin_debate)
-    decorator_handler = CommandHandler(['meta', 'lf', 'for', 'against', 'poi'], decorator_count)
+    close_debate_handler     = CommandHandler(['cancel', 'conclude'], close_debate)
+    begin_debate_handler     = CommandHandler('begin', begin_debate)
+    decorator_handler        = CommandHandler(['meta', 'lf', 'for', 'against', 'poi'], decorator_count)
 
     dispatcher.add_handler(start_debate_handler)
     dispatcher.add_handler(update_moderator_handler)
     dispatcher.add_handler(close_debate_handler)
     dispatcher.add_handler(begin_debate_handler)
     dispatcher.add_handler(decorator_handler)
+
+    dispatcher.add_error_handler(error_handler)
 
     # Start the Bot
     updater.start_polling(clean=True)
