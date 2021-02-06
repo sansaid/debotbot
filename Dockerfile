@@ -11,7 +11,7 @@ RUN find /app/. -type f  | xargs dos2unix && \
     ls /app
 
 #### NEXT STAGE ####
-FROM python:alpine
+FROM python:3.9-alpine
 
 WORKDIR /app
 COPY --from=prep /app /app
